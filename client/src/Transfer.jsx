@@ -1,7 +1,9 @@
 import { useState } from "react";
 import server from "./server";
+import { sign } from "ethereum-cryptography/secp256k1";
+import toHexHash from "./utils/toHexHash";
 
-function Transfer({ address, setBalance }) {
+function Transfer({ setBalance, privateKey, publicKey }) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
 
@@ -11,16 +13,35 @@ function Transfer({ address, setBalance }) {
     evt.preventDefault();
 
     try {
-      const {
-        data: { balance },
-      } = await server.post(`send`, {
-        sender: address,
-        amount: parseInt(sendAmount),
-        recipient,
-      });
-      setBalance(balance);
+      if (recipient && sendAmount) {
+        const message = {
+          type: "transaction",
+          sender: publicKey,
+          recipient,
+          sendAmount: parseInt(sendAmount),
+        };
+        const msgHash = toHexHash(message);
+        const signatureResponse = await sign(msgHash, privateKey, {
+          recovered: true,
+        });
+        const {
+          data: { balance },
+        } = await server.post(`send`, {
+          signatureResponse,
+          msgHash,
+          message,
+        });
+
+        setBalance(balance);
+        alert("Sent!");
+        setSendAmount("");
+        setRecipient("");
+      } else {
+        alert("fill the input");
+      }
     } catch (ex) {
       alert(ex.response.data.message);
+      console.log("ex", ex);
     }
   }
 
@@ -33,17 +54,15 @@ function Transfer({ address, setBalance }) {
         <input
           placeholder="1, 2, 3..."
           value={sendAmount}
-          onChange={setValue(setSendAmount)}
-        ></input>
+          onChange={setValue(setSendAmount)}></input>
       </label>
 
       <label>
         Recipient
         <input
-          placeholder="Type an address, for example: 0x2"
+          placeholder="Type a publicKey, for example: 0x2"
           value={recipient}
-          onChange={setValue(setRecipient)}
-        ></input>
+          onChange={setValue(setRecipient)}></input>
       </label>
 
       <input type="submit" className="button" value="Transfer" />

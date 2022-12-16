@@ -9,7 +9,7 @@ label {
   display: flex;
   flex-direction: column;
   letter-spacing: 0.05rem;
-  font-size: .8em;
+  font-size: 0.8em;
   font-weight: 400;
   color: #222;
 }
@@ -46,7 +46,9 @@ input {
   border: 1px solid rgb(226, 232, 240);
   background-color: #fdfdfe;
   padding-inline-start: 0.75rem;
+  padding-inline-end: 0.7rem;
   font-size: 0.875rem;
+  margin-top: 8px;
 }
 
 .button {
@@ -58,7 +60,7 @@ input {
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 400;
-  font-size: .9em;
+  font-size: 0.9em;
   &:hover {
     cursor: pointer;
   }
@@ -67,12 +69,13 @@ input {
 .wallet {
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .balance {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 400;
-    font-size: .9em;
+    font-size: 0.9em;
     display: inline-flex;
     margin-top: 10px;
     padding: 0.75rem;
@@ -83,4 +86,9 @@ input {
 .transfer {
   display: flex;
   flex-direction: column;
+}
+
+.error {
+  color: red;
+  font-size: smaller;
 }
